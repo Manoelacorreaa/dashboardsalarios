@@ -57,6 +57,10 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        chart: {
+          revenue: "hsl(var(--chart-revenue))",
+          salary: "hsl(var(--chart-salary))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
