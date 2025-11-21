@@ -3,9 +3,9 @@ import { DataRecord, MonthlyData, ClientData, ProductData } from "@/types/dashbo
 export const calculateTotals = (data: DataRecord[]) => {
   return data.reduce(
     (acc, record) => ({
-      receita: acc.receita + record.receitaBRL,
-      salario: acc.salario + record.salarioBRL,
-      volume: acc.volume + record.volumeBRL,
+      receita: acc.receita + (Number(record.receitaBRL) || 0),
+      salario: acc.salario + (Number(record.salarioBRL) || 0),
+      volume: acc.volume + (Number(record.volumeBRL) || 0),
     }),
     { receita: 0, salario: 0, volume: 0 }
   );
@@ -14,11 +14,13 @@ export const calculateTotals = (data: DataRecord[]) => {
 export const calculateMonthlyData = (data: DataRecord[], monthOrder: string[]): MonthlyData[] => {
   const monthlyMap = data.reduce((acc, record) => {
     const mes = record.mes;
+    if (!mes) return acc;
+    
     if (!acc[mes]) {
       acc[mes] = { mes, receita: 0, salario: 0 };
     }
-    acc[mes].receita += record.receitaBRL;
-    acc[mes].salario += record.salarioBRL;
+    acc[mes].receita += Number(record.receitaBRL) || 0;
+    acc[mes].salario += Number(record.salarioBRL) || 0;
     return acc;
   }, {} as Record<string, MonthlyData>);
 
@@ -36,12 +38,12 @@ export const findBestSalaryMonth = (monthlyData: MonthlyData[]) => {
 
 export const calculateTopClients = (data: DataRecord[], limit: number = 10) => {
   const clientMap = data.reduce((acc, record) => {
-    const cliente = record.cliente;
+    const cliente = record.cliente || "Sem cliente";
     if (!acc[cliente]) {
       acc[cliente] = { cliente, receita: 0, salario: 0 };
     }
-    acc[cliente].receita += record.receitaBRL;
-    acc[cliente].salario += record.salarioBRL;
+    acc[cliente].receita += Number(record.receitaBRL) || 0;
+    acc[cliente].salario += Number(record.salarioBRL) || 0;
     return acc;
   }, {} as Record<string, ClientData>);
 
@@ -55,12 +57,12 @@ export const calculateTopClients = (data: DataRecord[], limit: number = 10) => {
 
 export const calculateProductData = (data: DataRecord[]): ProductData[] => {
   const productMap = data.reduce((acc, record) => {
-    const produto = record.produto;
+    const produto = record.produto || "Sem produto";
     if (!acc[produto]) {
       acc[produto] = { produto, receita: 0, salario: 0 };
     }
-    acc[produto].receita += record.receitaBRL;
-    acc[produto].salario += record.salarioBRL;
+    acc[produto].receita += Number(record.receitaBRL) || 0;
+    acc[produto].salario += Number(record.salarioBRL) || 0;
     return acc;
   }, {} as Record<string, ProductData>);
 
