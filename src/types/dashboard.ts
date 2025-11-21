@@ -7,17 +7,17 @@ export interface RawData {
 }
 
 export interface DataRecord {
-  cliente: string;
-  produto: string;
-  classeSR: string;
-  tipoProduto: string;
-  boletado: boolean;
-  feeBrutoPercent: number;
-  repasseProdutoPercent: number;
-  volumeBRL: number;
-  salarioBRL: number;
-  receitaBRL: number;
-  mes: string;
+  cliente: string | null;
+  produto: string | null;
+  classeSR: string | null;
+  tipoProduto: string | null;
+  boletado: boolean | null;
+  feeBrutoPercent: number | null;
+  repasseProdutoPercent: number | null;
+  volumeBRL: number | null;
+  salarioBRL: number | null;
+  receitaBRL: number | null;
+  mes: string | null;
   raw: RawData;
 }
 

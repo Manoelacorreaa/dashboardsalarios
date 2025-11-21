@@ -37,15 +37,12 @@ export const useDashboardData = (filters: Filters) => {
   const filteredData = apiData?.data.filter((record: DataRecord) => {
     // Regra fundamental: apenas boletado === true
     if (!record.boletado) return false;
-    
-    // Descartar receita nula, NaN ou zero
-    if (!record.receitaBRL || isNaN(record.receitaBRL) || record.receitaBRL === 0) return false;
 
     // Aplicar filtros do usuário
     if (filters.mes !== "Todos" && record.mes !== filters.mes) return false;
-    if (filters.produtos.length > 0 && !filters.produtos.includes(record.produto)) return false;
-    if (filters.cliente && !record.cliente.toLowerCase().includes(filters.cliente.toLowerCase())) return false;
-    if (filters.classesSR.length > 0 && !filters.classesSR.includes(record.classeSR)) return false;
+    if (filters.produtos.length > 0 && record.produto && !filters.produtos.includes(record.produto)) return false;
+    if (filters.cliente && record.cliente && !record.cliente.toLowerCase().includes(filters.cliente.toLowerCase())) return false;
+    if (filters.classesSR.length > 0 && record.classeSR && !filters.classesSR.includes(record.classeSR)) return false;
 
     return true;
   }) || [];
