@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { ApiResponse, DataRecord, Filters } from "@/types/dashboard";
 
-const API_URL = "https://script.google.com/macros/s/AKfycbwHKsc85VizBeRE78chyuiApw8y28dfWWPIOrF5sf139nthIGZkp9KUpzHqt-J_Gc0c/exec";
+const API_URL = "https://script.google.com/macros/s/AKfycbytPGFHTbz2ufAmiHC4qgwNIKqFYkwChRmwi5c38SEcf-e8dP9QtQ2-6jlVedUwdV4/exec";
 
 const MONTH_ORDER = [
   "Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho",
