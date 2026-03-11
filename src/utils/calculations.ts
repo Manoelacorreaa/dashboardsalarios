@@ -1,70 +1,63 @@
-import { DataRecord, MonthlyData, ClientData, ProductData } from "@/types/dashboard";
+import { RowData, MonthlyData, ClientData, ProductData } from "@/types/dashboard";
 
-export const calculateTotals = (data: DataRecord[]) => {
-  return data.reduce(
-    (acc, record) => ({
-      receita: acc.receita + (Number(record.receitaBRL) || 0),
-      salario: acc.salario + (Number(record.salarioBRL) || 0),
-      volume: acc.volume + (Number(record.volumeBRL) || 0),
-    }),
-    { receita: 0, salario: 0, volume: 0 }
-  );
+const parseValue = (val: any): number => {
+  if (typeof val === 'number') return val;
+  if (!val) return 0;
+  const cleaned = String(val)
+    .replace("R$", "")
+    .replace(/\./g, "")
+    .replace(",", ".")
+    .trim();
+  return parseFloat(cleaned) || 0;
 };
 
-export const calculateMonthlyData = (data: DataRecord[], monthOrder: string[]): MonthlyData[] => {
-  const monthlyMap = data.reduce((acc, record) => {
-    const mes = record.mes;
-    if (!mes) return acc;
-    
-    if (!acc[mes]) {
-      acc[mes] = { mes, receita: 0, salario: 0 };
-    }
-    acc[mes].receita += Number(record.receitaBRL) || 0;
-    acc[mes].salario += Number(record.salarioBRL) || 0;
+export const calculateTotals = (data: RowData[]) => {
+  return data.reduce((acc, curr) => ({
+    receita: acc.receita + parseValue(curr.Receita),
+    salario: acc.salario + parseValue(curr["Salário Mapeado"]),
+    volume: acc.volume + parseValue(curr.Volume),
+  }), { receita: 0, salario: 0, volume: 0 });
+};
+
+export const calculateMonthlyData = (data: RowData[], monthOrder: string[]): MonthlyData[] => {
+  const map = data.reduce((acc, curr) => {
+    const m = curr.Month;
+    if (!m) return acc;
+    if (!acc[m]) acc[m] = { mes: m, receita: 0, salario: 0 };
+    acc[m].receita += parseValue(curr.Receita);
+    acc[m].salario += parseValue(curr["Salário Mapeado"]);
     return acc;
   }, {} as Record<string, MonthlyData>);
-
-  return monthOrder
-    .map(mes => monthlyMap[mes])
-    .filter(Boolean);
+  return monthOrder.filter(m => map[m]).map(m => map[m]);
 };
 
 export const findBestSalaryMonth = (monthlyData: MonthlyData[]) => {
   if (monthlyData.length === 0) return null;
-  return monthlyData.reduce((best, current) => 
-    current.salario > best.salario ? current : best
-  );
+  return [...monthlyData].sort((a, b) => b.salario - a.salario)[0];
 };
 
-export const calculateTopClients = (data: DataRecord[], limit: number = 10) => {
-  const clientMap = data.reduce((acc, record) => {
-    const cliente = record.cliente || "Sem cliente";
-    if (!acc[cliente]) {
-      acc[cliente] = { cliente, receita: 0, salario: 0 };
-    }
-    acc[cliente].receita += Number(record.receitaBRL) || 0;
-    acc[cliente].salario += Number(record.salarioBRL) || 0;
+export const calculateTopClients = (data: RowData[]) => {
+  const map = data.reduce((acc, curr) => {
+    const c = curr.Cliente || "Indefinido";
+    if (!acc[c]) acc[c] = { cliente: c, receita: 0, salario: 0 };
+    acc[c].receita += parseValue(curr.Receita);
+    acc[c].salario += parseValue(curr["Salário Mapeado"]);
     return acc;
   }, {} as Record<string, ClientData>);
-
-  const clients = Object.values(clientMap);
-  
+  const sorted = Object.values(map);
   return {
-    byReceita: [...clients].sort((a, b) => b.receita - a.receita).slice(0, limit),
-    bySalario: [...clients].sort((a, b) => b.salario - a.salario).slice(0, limit),
+    byReceita: [...sorted].sort((a, b) => b.receita - a.receita).slice(0, 10),
+    bySalario: [...sorted].sort((a, b) => b.salario - a.salario).slice(0, 10),
   };
 };
 
-export const calculateProductData = (data: DataRecord[]): ProductData[] => {
-  const productMap = data.reduce((acc, record) => {
-    const produto = record.produto || "Sem produto";
-    if (!acc[produto]) {
-      acc[produto] = { produto, receita: 0, salario: 0 };
-    }
-    acc[produto].receita += Number(record.receitaBRL) || 0;
-    acc[produto].salario += Number(record.salarioBRL) || 0;
+export const calculateProductData = (data: RowData[]): ProductData[] => {
+  const map = data.reduce((acc, curr) => {
+    const p = curr.Produto || "Outros";
+    if (!acc[p]) acc[p] = { produto: p, receita: 0, salario: 0 };
+    acc[p].receita += parseValue(curr.Receita);
+    acc[p].salario += parseValue(curr["Salário Mapeado"]);
     return acc;
   }, {} as Record<string, ProductData>);
-
-  return Object.values(productMap).sort((a, b) => b.receita - a.receita);
+  return Object.values(map).sort((a, b) => b.receita - a.receita);
 };

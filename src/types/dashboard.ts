@@ -1,34 +1,16 @@
-export interface RawData {
-  feeBruto: string;
-  repasseProduto: string;
-  volume: string;
-  salario: string;
-  receita: string;
-}
-
-export interface DataRecord {
-  cliente: string | null;
-  produto: string | null;
-  classeSR: string | null;
-  tipoProduto: string | null;
-  boletado: boolean | null;
-  feeBrutoPercent: number | null;
-  repasseProdutoPercent: number | null;
-  volumeBRL: number | null;
-  salarioBRL: number | null;
-  receitaBRL: number | null;
-  mes: string | null;
-  raw: RawData;
-}
-
-export interface ApiResponse {
-  updatedAt: string;
-  totalRegistros: number;
-  filtros: {
-    mes: string;
-    boletado: boolean;
-  };
-  data: DataRecord[];
+export interface RowData {
+  Cliente: string;
+  Produto: string;
+  "Classe SR": string;
+  "Tipo produto": string;
+  BOLETADO: any;
+  "Fee bruto": any;
+  "Repasse produto": any;
+  Volume: any;
+  Salário: any;
+  Receita: any;
+  "Salário Mapeado": any;
+  Month: string;
 }
 
 export interface Filters {
