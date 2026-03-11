@@ -36,13 +36,13 @@ const Index = () => {
   }, [apiData, monthOrder]);
 
   const availableProdutos = useMemo(() => {
-    if (!apiData?.data) return [];
-    return [...new Set(apiData.data.map((r: RowData) => r.Produto).filter(Boolean))].sort();
+    if (!apiData?.data) return [] as string[];
+    return ([...new Set(apiData.data.map((r: RowData) => r.Produto).filter(Boolean))] as string[]).sort();
   }, [apiData]);
 
   const availableClasses = useMemo(() => {
-    if (!apiData?.data) return [];
-    return [...new Set(apiData.data.map((r: RowData) => r["Classe SR"]).filter(Boolean))].sort();
+    if (!apiData?.data) return [] as string[];
+    return ([...new Set(apiData.data.map((r: RowData) => r["Classe SR"]).filter(Boolean))] as string[]).sort();
   }, [apiData]);
 
   const totals = useMemo(() => calculateTotals(data), [data]);
