@@ -1,37 +1,47 @@
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { DataRecord } from "@/types/dashboard";
+import { RowData } from "@/types/dashboard";
 import { formatCurrency, formatPercent } from "@/utils/formatters";
 import { ArrowUpDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 interface DataTableProps {
-  data: DataRecord[];
+  data: RowData[];
 }
 
-type SortKey = keyof DataRecord;
+const parseValue = (val: any): number => {
+  if (typeof val === 'number') return val;
+  if (!val) return 0;
+  const cleaned = String(val)
+    .replace("R$", "")
+    .replace(/\./g, "")
+    .replace(",", ".")
+    .trim();
+  return parseFloat(cleaned) || 0;
+};
+
+type SortKey = "Month" | "Cliente" | "Produto" | "Classe SR" | "Volume" | "Receita" | "Salário Mapeado" | "Fee bruto" | "Repasse produto";
 type SortOrder = "asc" | "desc";
 
 export const DataTable = ({ data }: DataTableProps) => {
-  const [sortKey, setSortKey] = useState<SortKey>("receitaBRL");
+  const [sortKey, setSortKey] = useState<SortKey>("Receita");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
   const sortedData = [...data].sort((a, b) => {
     const aVal = a[sortKey];
     const bVal = b[sortKey];
-    
-    if (typeof aVal === "number" && typeof bVal === "number") {
-      return sortOrder === "asc" ? aVal - bVal : bVal - aVal;
-    }
-    
-    if (typeof aVal === "string" && typeof bVal === "string") {
-      return sortOrder === "asc" 
-        ? aVal.localeCompare(bVal) 
+
+    const aNum = parseValue(aVal);
+    const bNum = parseValue(bVal);
+
+    if (typeof aVal === "string" && typeof bVal === "string" && isNaN(aNum) && isNaN(bNum)) {
+      return sortOrder === "asc"
+        ? aVal.localeCompare(bVal)
         : bVal.localeCompare(aVal);
     }
-    
-    return 0;
+
+    return sortOrder === "asc" ? aNum - bNum : bNum - aNum;
   });
 
   const handleSort = (key: SortKey) => {
@@ -60,7 +70,7 @@ export const DataTable = ({ data }: DataTableProps) => {
       <CardHeader>
         <CardTitle>Registros Detalhados</CardTitle>
         <CardDescription>
-          Apenas operações boletadas • {data.length} registros
+          {data.length} registros
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -68,36 +78,36 @@ export const DataTable = ({ data }: DataTableProps) => {
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead><SortButton column="mes" label="Mês" /></TableHead>
-                <TableHead><SortButton column="cliente" label="Cliente" /></TableHead>
-                <TableHead><SortButton column="produto" label="Produto" /></TableHead>
-                <TableHead><SortButton column="classeSR" label="Classe SR" /></TableHead>
-                <TableHead className="text-right"><SortButton column="volumeBRL" label="Volume" /></TableHead>
-                <TableHead className="text-right"><SortButton column="receitaBRL" label="Receita" /></TableHead>
-                <TableHead className="text-right"><SortButton column="salarioBRL" label="Salário" /></TableHead>
-                <TableHead className="text-right"><SortButton column="feeBrutoPercent" label="Fee" /></TableHead>
-                <TableHead className="text-right"><SortButton column="repasseProdutoPercent" label="Repasse" /></TableHead>
+                <TableHead><SortButton column="Month" label="Mês" /></TableHead>
+                <TableHead><SortButton column="Cliente" label="Cliente" /></TableHead>
+                <TableHead><SortButton column="Produto" label="Produto" /></TableHead>
+                <TableHead><SortButton column="Classe SR" label="Classe SR" /></TableHead>
+                <TableHead className="text-right"><SortButton column="Volume" label="Volume" /></TableHead>
+                <TableHead className="text-right"><SortButton column="Receita" label="Receita" /></TableHead>
+                <TableHead className="text-right"><SortButton column="Salário Mapeado" label="Salário" /></TableHead>
+                <TableHead className="text-right"><SortButton column="Fee bruto" label="Fee" /></TableHead>
+                <TableHead className="text-right"><SortButton column="Repasse produto" label="Repasse" /></TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {sortedData.map((record, idx) => (
                 <TableRow key={idx}>
-                  <TableCell className="font-medium">{record.mes}</TableCell>
-                  <TableCell>{record.cliente}</TableCell>
-                  <TableCell>{record.produto}</TableCell>
-                  <TableCell>{record.classeSR}</TableCell>
-                  <TableCell className="text-right">{formatCurrency(record.volumeBRL)}</TableCell>
+                  <TableCell className="font-medium">{record.Month}</TableCell>
+                  <TableCell>{record.Cliente}</TableCell>
+                  <TableCell>{record.Produto}</TableCell>
+                  <TableCell>{record["Classe SR"]}</TableCell>
+                  <TableCell className="text-right">{formatCurrency(parseValue(record.Volume))}</TableCell>
                   <TableCell className="text-right font-semibold text-primary">
-                    {formatCurrency(record.receitaBRL)}
+                    {formatCurrency(parseValue(record.Receita))}
                   </TableCell>
                   <TableCell className="text-right font-semibold text-secondary">
-                    {formatCurrency(record.salarioBRL)}
+                    {formatCurrency(parseValue(record["Salário Mapeado"]))}
                   </TableCell>
                   <TableCell className="text-right text-muted-foreground">
-                    {formatPercent(record.feeBrutoPercent)}
+                    {formatPercent(parseValue(record["Fee bruto"]))}
                   </TableCell>
                   <TableCell className="text-right text-muted-foreground">
-                    {formatPercent(record.repasseProdutoPercent)}
+                    {formatPercent(parseValue(record["Repasse produto"]))}
                   </TableCell>
                 </TableRow>
               ))}
