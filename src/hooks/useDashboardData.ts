@@ -4,9 +4,9 @@ import { Filters, RowData } from "@/types/dashboard";
 const API_URL = "https://script.google.com/macros/s/AKfycbxPp11kRvUl-SAiArLPmTIobwtj835g7zCaQleQT8KcSUcQw1Y4Tg8cSAsInASrQ6Ke/exec";
 
 const MONTH_ORDER = [
-  "Janeiro/2026", "Fevereiro/2026", "Março/2026", "Abril/2026",
-  "Maio/2026", "Junho/2026", "Julho/2026", "Agosto/2026",
-  "Setembro/2026", "Outubro/2026", "Novembro/2026", "Dezembro/2026",
+  "Janeiro", "Fevereiro", "Março", "Abril",
+  "Maio", "Junho", "Julho", "Agosto",
+  "Setembro", "Outubro", "Novembro", "Dezembro",
 ];
 
 export const useDashboardData = (filters: Filters) => {
